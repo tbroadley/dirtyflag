@@ -59,9 +59,9 @@ def get_rough_evaluation_from_stockfish(game: dict) -> int:
     )
 
 
-def get_dirty_flag_games(username: str):
+def get_games(username: str) -> list[dict]:
     # Not using client.games.export_by_player because it doesn't support lastFen
-    games = client.games._r.get(
+    return client.games._r.get(
         path=f"https://lichess.org/api/games/user/{username}",
         params={
             "perfType": "rapid,blitz,bullet,ultraBullet",
@@ -72,7 +72,10 @@ def get_dirty_flag_games(username: str):
         stream=True,
         converter=Game.convert,
     )
-    dirty_flags = []
+
+
+def get_dirty_flag_games(games: list[dict], username: str):
+    dirty_flag_games = []
 
     for game in games:
         if game["status"] != "outoftime":
@@ -95,11 +98,12 @@ def get_dirty_flag_games(username: str):
         ):
             continue
 
-        dirty_flags.append(game)
+        dirty_flag_games.append(game)
 
-    return dirty_flags
+    return dirty_flag_games
 
 
+games = get_games(USERNAME)
 dirty_flag_games = get_dirty_flag_games(USERNAME)
 for game in dirty_flag_games:
     game_id = game["id"]
