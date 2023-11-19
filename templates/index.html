@@ -23,19 +23,14 @@
             </div>
         {% else %}
             <div id="dirty-flag-data" class="main-content">
-                <p>Loading...</p>
             </div>
 
             <script type="text/javascript">
-                let dirtyFlagSummaryLoaded = false
+                let loadingText = "Loading..."
 
                 function updateLoadingText(text, milliseconds) {
                     return setTimeout(() => {
-                        if (dirtyFlagSummaryLoaded) {
-                            return;
-                        }
-
-                        document.querySelector("#dirty-flag-data > p").innerText = text;
+                        loadingText = text;
                     }, milliseconds)
                 }
 
@@ -46,25 +41,48 @@
                     updateLoadingText("I'm worried about you.", 60_000),
                 ]
 
-                async function getDirtyFlagSummary() {
+                async function getDirtyFlagCountStreamedAndSummary() {
                     try {
-                        const response = await fetch("{{ url_for('get_dirty_flag_summary') }}");
-                        if (response.status < 400) {
-                            document.getElementById("dirty-flag-data").innerHTML = await response.text();
+                        const response = await fetch("{{ url_for('get_dirty_flag_count_streamed') }}");
+                        const textDecoder = new TextDecoder("ascii")
+                        for await (let chunk of response.body) {
+                            // chunk is a Uint8Array. Parse it to a string of characters
+                            chunk = textDecoder.decode(chunk).trim();
+                            try {
+                                const { username, dirty_flags: dirtyFlags } = JSON.parse(chunk);
+                                const fontScale = dirtyFlags < 50 ? 1 : (dirtyFlags - 50) * 0.01 + 1;
+                                document.getElementById("dirty-flag-data").innerHTML = `
+                                    <p>
+                                        <span class="outrun">${username}</span>, you've dirty flagged
+                                    </p> 
+                                    <p>
+                                        <span class="outrun" style="font-size: ${fontScale}em">${dirtyFlags}</span> time${dirtyFlags === 1 ? '' : 's'}.
+                                    </p>
+                                    <p>
+                                        ${loadingText}
+                                    </p>
+                                `
+                            } catch (error) {
+                                // Ignore errors from parsing the JSON.
+                            }
+                        }
+
+                        const summaryResponse = await fetch("{{ url_for('get_dirty_flag_summary') }}");
+                        if (summaryResponse.status < 400) {
+                            document.getElementById("dirty-flag-data").innerHTML = await summaryResponse.text();
                         } else {
-                            document.querySelector("#dirty-flag-data > p").innerText = `Something went horribly wrong. Sorry!`;
+                            document.getElementById("dirty-flag-data").innerHTML = `<p>Something went horribly wrong. Sorry!</p>`;
                         }
                     } catch (error) {
-                        document.querySelector("#dirty-flag-data > p").innerText = `Something went horribly wrong. Sorry! Specifically: ${error.message}`;
+                        document.getElementById("dirty-flag-data").innerHTML = `<p>Something went horribly wrong. Sorry! Specifically: ${error.message}</p>`;
                     } finally {
-                        dirtyFlagSummaryLoaded = true;
                         for (const timeout of loadingTimeouts) {
                             clearTimeout(timeout);
                         }
                     }
                 }
 
-                getDirtyFlagSummary();
+                getDirtyFlagCountStreamedAndSummary();
             </script>
         {% endif %}
     </body>

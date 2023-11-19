@@ -1,4 +1,6 @@
 import os
+import json
+from collections.abc import Generator
 
 from flask import Flask, jsonify, redirect, render_template
 from flask import session
@@ -10,7 +12,14 @@ load_dotenv()
 
 from authlib.integrations.flask_client import OAuth
 
-from games import get_berserk_client, get_username, get_dirty_flag_data
+from games import (
+    get_berserk_client,
+    get_username,
+    get_dirty_flag_data,
+    get_games,
+    filter_dirty_flag_games,
+    stockfish,
+)
 
 LICHESS_HOST = os.getenv("LICHESS_HOST", "https://lichess.org")
 
@@ -62,7 +71,28 @@ def authorize():
     return redirect(url_for("index"))
 
 
-@app.route("/dirty-flag-summary")
+@app.route("/api/dirty-flag-count-streamed")
+def get_dirty_flag_count_streamed():
+    if "token" not in session:
+        return jsonify({}), 401
+
+    berserk_client = get_berserk_client(session["token"]["access_token"])
+    username = get_username(berserk_client)
+
+    dirty_flags = 0
+
+    def generate() -> Generator[str, None, None]:
+        games = get_games(berserk_client, username)
+        dirty_flag_games = filter_dirty_flag_games(games, username, stockfish)
+        for _ in dirty_flag_games:
+            nonlocal dirty_flags
+            dirty_flags += 1
+            yield json.dumps({"username": username, "dirty_flags": dirty_flags})
+
+    return generate(), {"Content-Type": "application/x-ndjson"}
+
+
+@app.route("/api/dirty-flag-summary")
 def get_dirty_flag_summary():
     if "token" not in session:
         return jsonify({}), 401
