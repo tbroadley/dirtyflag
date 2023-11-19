@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Dirty Flag</title>
+    </head>
+    <body>
+        <h1>Are you a <span>dirty flagger?</span></h1>
+
+        <!-- Link to the login route -->
+        {% if username is None %}
+            <p>
+                See how often you dirty flag your opponents.
+            </p>
+        {% else %}
+            <p>
+                TODO load dirty flag data.
+            </p>
+        {% endif %}
+
+        <a href="{{ url_for('login') }}">Login to Lichess</a>
+    </body>
+</html>
