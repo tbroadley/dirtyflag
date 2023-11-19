@@ -1,16 +1,16 @@
 import berserk
 from berserk.models import Game
 from stockfish import Stockfish
-import sys
+import os
 
-TOKEN = sys.argv[1]  # replace with your own token
+TOKEN = os.environ["LICHESS_API_TOKEN"]
 USERNAME = "newwwworld"  # replace with the username you're interested in
 
 session = berserk.TokenSession(TOKEN)
 client = berserk.Client(session=session)
 
 
-stockfish = Stockfish("./stockfish")
+stockfish = Stockfish("./stockfish/src/stockfish")
 
 
 def user_won_game(game: dict, username: str) -> bool:
@@ -103,7 +103,9 @@ def get_dirty_flag_games(username: str):
 dirty_flag_games = get_dirty_flag_games(USERNAME)
 for game in dirty_flag_games:
     game_id = game["id"]
-    game_ply_count = len(game["analysis"])
+    game_ply_count = (
+        len(game["analysis"]) if "analysis" in game else (game["moves"] * 2 - 1)
+    )
     print(f"https://lichess.org/{game_id}#{game_ply_count}")
 
 stockfish.send_quit_command()
