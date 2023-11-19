@@ -58,7 +58,7 @@ body {
 .main-content {
     max-width: 560px;
     border-radius: 1rem;
-    background: rgba(256, 256, 128, 0.4);
+    background: rgba(256, 256, 128, 0.7);
 }
 
 h1, p {

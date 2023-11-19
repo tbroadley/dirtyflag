@@ -8,21 +8,16 @@
         <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     </head>
     <body>
-        <h1>What is a <br> <span class="outrun">dirty flag?</span></h1>
+        <h1>What's a <br> <span class="outrun">dirty flag?</span></h1>
 
         <div class="main-content">
             <p>
                 It's when you're losing at chess, or in a drawn position... but there's a glimmer of hope.
                 You're ahead of your opponent on the clock. You play fast, so fast your enemy can't keep up.
                 They run out of time. The game's over. You win, even though you were down a pawn, a piece, or even a queen.
-                That rush of adrenaline, that fountain of salt from your opponent: That's a <span class="outrun">dirty flag.</span>
+                That rush of adrenaline, that mountain of salt from your opponent: That's a <span class="outrun">dirty flag.</span>
             </p>
-            <p>
-                See how often you dirty flag your opponents.
-            </p>
-            <p>
-                <a href="{{ url_for('login') }}">Login to Lichess</a>
-            </p>
+            {% include 'partials/cta.html' %}
         </div>
     </body>
 </html>

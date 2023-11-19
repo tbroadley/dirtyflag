@@ -16,11 +16,9 @@
 
         {% if username is none %}
             <div class="main-content">
+                {% include 'partials/cta.html' %}
                 <p>
-                    See how often you dirty flag your opponents.
-                </p>
-                <p>
-                    <a href="{{ url_for('login') }}">Login to Lichess</a>
+                    <a href="{{ url_for('faq') }}">What's a dirty flag?</a>
                 </p>
             </div>
         {% else %}
