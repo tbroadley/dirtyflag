@@ -31,8 +31,22 @@ body {
 
     font-family: "VCR OSD Mono", monospace;
     
-    /* TODO Optimize image */
-    background: url("/static/images/outrun-background.png") no-repeat center center fixed;
+    background: url("/static/images/outrun-background-xs.jpg") no-repeat center center fixed;
+    background-size: cover;
+}
+
+@media (min-height: 601px) {
+    body {
+        background: url("/static/images/outrun-background-small.jpg") no-repeat center center fixed;
+        background-size: cover;
+    }
+}
+
+@media (min-width: 769px) {
+    body {
+        background: url("/static/images/outrun-background-regular.jpg") no-repeat center center fixed;
+        background-size: cover;
+    }
 }
 
 @media only screen and (max-width: 600px) {
