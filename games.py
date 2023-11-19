@@ -1,7 +1,13 @@
+from functools import lru_cache
+from itertools import tee
 import berserk
 from berserk.models import Game
 from stockfish import Stockfish
 import os
+from math import floor
+
+
+stockfish = Stockfish("./stockfish/src/stockfish")
 
 
 def user_won_game(game: dict, username: str) -> bool:
@@ -24,8 +30,6 @@ def get_rough_evaluation_from_analysis(game: dict) -> int | None:
     if "analysis" not in game:
         return None
 
-    print(f"Checking analysis for game {game['id']}")
-
     last_move_analysis = game["analysis"][-1]
     if last_move_analysis is None:
         return None
@@ -38,8 +42,6 @@ def get_rough_evaluation_from_analysis(game: dict) -> int | None:
 
 
 def get_rough_evaluation_from_stockfish(game: dict, stockfish: Stockfish) -> int:
-    print(f"Using Stockfish to evaluate game {game['id']}")
-
     stockfish.set_fen_position(game["lastFen"])
     evaluation = stockfish.get_evaluation()
 
@@ -102,16 +104,44 @@ def get_end_of_game_link(game: dict) -> str:
     return f"https://lichess.org/{game_id}#{game_ply_count}"
 
 
+def get_berserk_client(access_token: str) -> berserk.Client:
+    berserk_session = berserk.TokenSession(access_token)
+    return berserk.Client(session=berserk_session)
+
+
+def get_username(berserk_client: berserk.Client) -> str:
+    return berserk_client.account.get()["username"]
+
+
+@lru_cache()
+def get_dirty_flag_data(access_token: str) -> dict:
+    berserk_client = get_berserk_client(access_token)
+    username = get_username(berserk_client)
+
+    games, games_for_length = tee(get_games(berserk_client, username))
+    dirty_flag_games = get_dirty_flag_games(games, username, stockfish)
+
+    total_games = len(list(games_for_length))
+    dirty_flags = len(dirty_flag_games)
+
+    dirty_flag_percentage = (
+        floor(len(dirty_flag_games) / total_games * 100) if total_games > 0 else 0
+    )
+
+    return {
+        "total_games": total_games,
+        "total_games_string": "{:,.0f}".format(total_games),
+        "dirty_flags": dirty_flags,
+        "dirty_flags_string": "{:,.0f}".format(dirty_flags),
+        "dirty_flag_percentage": dirty_flag_percentage,
+        "dirty_flag_percentage_string": "{:.0f}%".format(dirty_flag_percentage),
+        "links": [get_end_of_game_link(game) for game in dirty_flag_games],
+    }
+
+
 if __name__ == "__main__":
-    lichess_username = "newwwworld"
     lichess_api_token = os.environ["LICHESS_API_TOKEN"]
 
-    berserk_session = berserk.TokenSession(lichess_api_token)
-    berserk_client = berserk.Client(session=berserk_session)
-
-    stockfish = Stockfish("./stockfish/src/stockfish")
-
-    games = get_games(berserk_client, lichess_username)
-    dirty_flag_games = get_dirty_flag_games(games, lichess_username, stockfish)
-    for game in dirty_flag_games:
-        print(get_end_of_game_link(game))
+    berserk_client = get_berserk_client(lichess_api_token)
+    dirty_flag_data = get_dirty_flag_data(lichess_api_token)
+    print(dirty_flag_data)

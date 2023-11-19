@@ -5,19 +5,33 @@
         <title>Dirty Flag</title>
     </head>
     <body>
-        <h1>Are you a <span>dirty flagger?</span></h1>
+        <h1>Are you a <span class="TODO">dirty flagger?</span></h1>
 
         <!-- Link to the login route -->
-        {% if username is None %}
+        {% if username is none %}
             <p>
                 See how often you dirty flag your opponents.
             </p>
+            <a href="{{ url_for('login') }}">Login to Lichess</a>
         {% else %}
-            <p>
-                TODO load dirty flag data.
-            </p>
-        {% endif %}
+            <div id="dirty-flag-data">Loading...</div>
 
-        <a href="{{ url_for('login') }}">Login to Lichess</a>
+            <script type="text/javascript">
+                async function getDirtyFlagSummary() {
+                    try {
+                        const response = await fetch("{{ url_for('get_dirty_flag_summary') }}");
+                        if (response.status < 400) {
+                            document.getElementById("dirty-flag-data").innerHTML = await response.text();
+                        } else {
+                            document.getElementById("dirty-flag-data").innerHTML = `Something went horribly wrong. Sorry!`;
+                        }
+                    } catch (error) {
+                        document.getElementById("dirty-flag-data").innerHTML = `Something went horribly wrong. Sorry! Specifically: ${error.message}`;
+                    }
+                }
+
+                getDirtyFlagSummary();
+            </script>
+        {% endif %}
     </body>
 </html>
