@@ -8,6 +8,8 @@ client = berserk.Client(session=session)
 
 
 def user_won_game(game: dict, username: str) -> bool:
+    if not "winner" in game:
+        return False
     if (
         game["winner"] == "white"
         and game["players"]["white"]["user"]["name"] == username
@@ -52,8 +54,7 @@ def get_dirty_flag_games(username: str):
         perf_type="rapid,blitz,bullet,ultraBullet",
         analysed=True,
         evals=True,
-        max=100,
-    )  # adjust max as needed
+    )
     dirty_flags = []
 
     for game in games:
