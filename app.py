@@ -37,6 +37,11 @@ def index():
     return render_template("index.html", username=username)
 
 
+@app.route("/faq")
+def faq():
+    return render_template("faq.html")
+
+
 @app.route("/login")
 def login():
     redirect_uri = url_for("authorize", _external=True)
