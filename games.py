@@ -1,7 +1,5 @@
 from functools import lru_cache
 from itertools import tee
-from typing import Tuple
-from collections.abc import Generator
 import berserk
 from berserk.models import Game
 from stockfish import Stockfish
@@ -54,7 +52,7 @@ def get_rough_evaluation_from_stockfish(game: dict, stockfish: Stockfish) -> int
     )
 
 
-def get_games(client: berserk.Client, username: str) -> Generator[dict, None, None]:
+def get_games(client: berserk.Client, username: str) -> list[dict]:
     # Not using client.games.export_by_player because it doesn't support lastFen
     return client.games._r.get(
         path=f"https://lichess.org/api/games/user/{username}",
@@ -69,9 +67,9 @@ def get_games(client: berserk.Client, username: str) -> Generator[dict, None, No
     )
 
 
-def filter_dirty_flag_games(
-    games: Generator[dict, None, None], username: str, stockfish: Stockfish
-) -> Generator[dict, None, None]:
+def get_dirty_flag_games(games: list[dict], username: str, stockfish: Stockfish):
+    dirty_flag_games = []
+
     for game in games:
         if game["status"] != "outoftime":
             continue
@@ -95,7 +93,9 @@ def filter_dirty_flag_games(
         ):
             continue
 
-        yield game
+        dirty_flag_games.append(game)
+
+    return dirty_flag_games
 
 
 def get_end_of_game_link(game: dict) -> str:
@@ -114,30 +114,18 @@ def get_username(berserk_client: berserk.Client) -> str:
 
 
 @lru_cache()
-def get_username_dirty_flag_games_and_total_games(
-    access_token: str,
-) -> Tuple[Generator[dict, None, None], int]:
+def get_dirty_flag_data(access_token: str) -> dict:
     berserk_client = get_berserk_client(access_token)
     username = get_username(berserk_client)
 
     games, games_for_length = tee(get_games(berserk_client, username))
-    dirty_flag_games = tee(filter_dirty_flag_games(games, username, stockfish))
+    dirty_flag_games = get_dirty_flag_games(games, username, stockfish)
 
-    return username, dirty_flag_games, len(list(games_for_length))
-
-
-def get_dirty_flag_data(access_token: str) -> dict:
-    (
-        username,
-        dirty_flag_games,
-        total_games,
-    ) = get_username_dirty_flag_games_and_total_games(access_token)
-    dirty_flag_games, dirty_flag_games_for_length = tee(dirty_flag_games)
-
-    dirty_flags = len(list(dirty_flag_games_for_length))
+    total_games = len(list(games_for_length))
+    dirty_flags = len(dirty_flag_games)
 
     dirty_flag_percentage = (
-        floor(dirty_flags / total_games * 100) if total_games > 0 else 0
+        floor(len(dirty_flag_games) / total_games * 100) if total_games > 0 else 0
     )
 
     return {
@@ -149,7 +137,6 @@ def get_dirty_flag_data(access_token: str) -> dict:
         "dirty_flag_percentage": dirty_flag_percentage,
         "dirty_flag_percentage_string": "{:.0f}%".format(dirty_flag_percentage),
         "links": [get_end_of_game_link(game) for game in dirty_flag_games],
-        "font_scale": 1 if dirty_flags < 50 else (dirty_flags - 50) * 0.01 + 1,
     }
 
 
