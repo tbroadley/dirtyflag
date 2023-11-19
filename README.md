@@ -21,7 +21,7 @@ python3 app.py
 
 ## What's a dirty flag?
 
-For a more poetic answer, see https://dirtyflag.thomasbroadley.com/faq
+For a more poetic answer, see https://dirtyflag.thomasbroadley.com/faq.
 
 A dirty flag is currently defined as a win on time where the position at the end of the game was drawn (up to +-0.1) or losing for the logged-in user. I'm open to suggestions for improving this. (See the TODO section for some ideas.)
 
