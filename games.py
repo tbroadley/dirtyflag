@@ -129,6 +129,7 @@ def get_dirty_flag_data(access_token: str) -> dict:
     )
 
     return {
+        "username": username,
         "total_games": total_games,
         "total_games_string": "{:,.0f}".format(total_games),
         "dirty_flags": dirty_flags,

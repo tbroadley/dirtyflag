@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, redirect, render_template
 from flask import session
 from flask import url_for
 
@@ -54,10 +54,7 @@ def authorize():
     token = oauth.lichess.authorize_access_token()
     session["token"] = token
 
-    berserk_client = get_berserk_client(token)
-    username = get_username(berserk_client)
-
-    return render_template("index.html", username=username)
+    return redirect(url_for("index"))
 
 
 @app.route("/dirty-flag-summary")
