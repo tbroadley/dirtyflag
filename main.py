@@ -1,6 +1,7 @@
 import berserk
+import sys
 
-TOKEN = "lip_2QpPax9q1utjJDx9G1t2"
+TOKEN = sys.argv[1]  # replace with your own token
 USERNAME = "newwwworld"  # replace with the username you're interested in
 
 session = berserk.TokenSession(TOKEN)
