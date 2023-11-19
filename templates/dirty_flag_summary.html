@@ -12,7 +12,7 @@
     <p>
         <span class="outrun">{{ username }}</span>,
         you're a <span class="outrun">
-            {% if dirty_flag_percentage < 2 %}
+            {% if dirty_flag_percentage < 2 or dirty_flags < 10 %}
                 dirty flag debutant.
             {% elif dirty_flag_percentage < 5 %}
                 dirty flag dabbler.
