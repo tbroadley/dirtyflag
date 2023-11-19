@@ -1,0 +1,33 @@
+@keyframes header {
+    0% {
+        transform: translateY(-100%) scale(0);
+    }
+    100% {
+        transform: translateY(0) scale(1);
+    } 
+}
+
+h1 {
+    animation-name: header;
+    animation-duration: 1s;
+    animation-timing-function: ease-in-out;
+}
+
+@keyframes main-content {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.main-content {
+    opacity: 0;
+
+    animation-name: main-content;
+    animation-duration: 1s;
+    animation-timing-function: ease-in-out;
+    animation-delay: 1s;
+    animation-fill-mode: forwards;
+}
