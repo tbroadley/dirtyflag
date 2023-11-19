@@ -34,6 +34,8 @@ def index():
     berserk_client = get_berserk_client(session["token"]["access_token"])
     username = get_username(berserk_client)
 
+    # TODO If the user's dirty flag data are in the cache, we should insert them directly
+    # into the template context instead of making another API call.
     return render_template("index.html", username=username)
 
 
