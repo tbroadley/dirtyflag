@@ -5,29 +5,61 @@
         <title>Dirty Flag</title>
 
         <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
         <h1>Are you a <br> <span class="outrun">dirty flagger?</span></h1>
 
         {% if username is none %}
-            <p>
-                See how often you dirty flag your opponents.
-            </p>
-            <a href="{{ url_for('login') }}">Login to Lichess</a>
+            <div class="main-content">
+                <p>
+                    See how often you dirty flag your opponents.
+                </p>
+                <p>
+                    <a href="{{ url_for('login') }}">Login to Lichess</a>
+                </p>
+            </div>
         {% else %}
-            <div id="dirty-flag-data">Loading...</div>
+            <div id="dirty-flag-data" class="main-content">
+                <p>Loading...</p>
+            </div>
 
             <script type="text/javascript">
+                let dirtyFlagSummaryLoaded = false
+
+                function updateLoadingText(text, milliseconds) {
+                    return setTimeout(() => {
+                        if (dirtyFlagSummaryLoaded) {
+                            return;
+                        }
+
+                        document.querySelector("#dirty-flag-data > p").innerText = text;
+                    }, milliseconds)
+                }
+
+                const loadingTimeouts = [
+                    updateLoadingText("Still loading...", 10_000),
+                    updateLoadingText("You must really enjoy online chess, eh?", 20_000),
+                    updateLoadingText("How many games have you played!?", 30_000),
+                    updateLoadingText("I'm worried about you.", 60_000),
+                ]
+
                 async function getDirtyFlagSummary() {
                     try {
                         const response = await fetch("{{ url_for('get_dirty_flag_summary') }}");
                         if (response.status < 400) {
                             document.getElementById("dirty-flag-data").innerHTML = await response.text();
                         } else {
-                            document.getElementById("dirty-flag-data").innerHTML = `Something went horribly wrong. Sorry!`;
+                            document.querySelector("#dirty-flag-data > p").innerText = `Something went horribly wrong. Sorry!`;
                         }
                     } catch (error) {
-                        document.getElementById("dirty-flag-data").innerHTML = `Something went horribly wrong. Sorry! Specifically: ${error.message}`;
+                        document.querySelector("#dirty-flag-data > p").innerText = `Something went horribly wrong. Sorry! Specifically: ${error.message}`;
+                    } finally {
+                        dirtyFlagSummaryLoaded = true;
+                        for (const timeout of loadingTimeouts) {
+                            clearTimeout(timeout);
+                        }
                     }
                 }
 

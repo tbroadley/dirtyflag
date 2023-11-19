@@ -44,7 +44,7 @@
         {% else %}
             {{ dirty_flag_percentage_string }}
         {% endif %}
-        of the {{ total_games_string }} games you've played.
+        of the {% if total_games > 10000 %} (holy hell) {% endif %} {{ total_games_string }} games you've played.
     </p>
 {% else %}
     <p>

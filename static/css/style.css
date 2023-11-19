@@ -31,18 +31,20 @@ body {
 
     font-family: "VCR OSD Mono", monospace;
     
+    /* TODO Optimize image */
     background: url("/static/images/outrun-background.png") no-repeat center center fixed;
 }
 
 @media only screen and (max-width: 600px) {
     body {
-        margin-top: 10vh;
+        margin-top: 17vh;
     }
 }
 
-#dirty-flag-data {
+.main-content {
+    max-width: 550px;
     border-radius: 1rem;
-    background: rgba(256, 256, 128, 0.3);
+    background: rgba(256, 256, 128, 0.4);
 }
 
 h1, p {
@@ -61,5 +63,8 @@ h1 > .outrun {
 
 p {
     font-size: 1.25em;
-    line-height: 0.75em;
+    line-height: 1em;
+
+    padding-left: 1em;
+    padding-right: 1em;
 }

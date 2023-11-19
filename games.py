@@ -60,7 +60,6 @@ def get_games(client: berserk.Client, username: str) -> list[dict]:
             "perfType": "rapid,blitz,bullet,ultraBullet",
             "lastFen": True,
             "evals": True,
-            "max": 10,
         },
         fmt=berserk.formats.NDJSON,
         stream=True,
