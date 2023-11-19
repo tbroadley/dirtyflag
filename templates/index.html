@@ -3,11 +3,12 @@
     <head>
         <meta charset="UTF-8">
         <title>Dirty Flag</title>
+
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     </head>
     <body>
-        <h1>Are you a <span class="TODO">dirty flagger?</span></h1>
+        <h1>Are you a <br> <span class="outrun">dirty flagger?</span></h1>
 
-        <!-- Link to the login route -->
         {% if username is none %}
             <p>
                 See how often you dirty flag your opponents.

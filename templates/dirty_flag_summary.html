@@ -1,17 +1,17 @@
 {% if total_games == 0 %}
     <p>
-        <span class="TODO">{{ username }}</span>,
+        <span class="outrun">{{ username }}</span>,
         you haven't played rapid or faster on Lichess. You may be a dirty flagger, but you're going to have to prove it.
     </p>
 {% elif dirty_flags == 0 %}
     <p>
-        <span class="TODO">{{ username }}</span>,
-        you're a <span class="TODO">goody two-shoes!</span> You've never dirty flagged in your Lichess career.
+        <span class="outrun">{{ username }}</span>,
+        you're a <span class="outrun">goody two-shoes!</span> You've never dirty flagged in your Lichess career.
     </p>
 {% elif dirty_flags < total_games %}
     <p>
-        <span class="TODO">{{ username }}</span>,
-        you're a <span class="TODO">
+        <span class="outrun">{{ username }}</span>,
+        you're a <span class="outrun">
             {% if dirty_flag_percentage < 2 %}
                 dirty flag debutant.
             {% elif dirty_flag_percentage < 5 %}
@@ -36,6 +36,8 @@
         {% else %}
             games</em>.
         {% endif %}
+    </p>
+    <p>
         That's 
         {% if dirty_flag_percentage == 0 %}
             less than 1%
@@ -46,6 +48,6 @@
     </p>
 {% else %}
     <p>
-        <span class="TODO">{{ username }}</span>... What? You've dirty flagged in every single game you've played? You're a <span class="TODO">dirty flagging machine!</span>
+        <span class="outrun">{{ username }}</span>... What? You've dirty flagged in every single game you've played? You're a <span class="outrun">dirty flagging machine!</span>
     </p>
 {% endif %}

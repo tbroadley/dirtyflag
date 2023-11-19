@@ -1,0 +1,65 @@
+@font-face {
+    font-family: "Outrun future";
+    src: url('/static/fonts/Outrun\ future.otf');
+}
+
+@font-face {
+    font-family: "Outrun future";
+    src: url('/static/fonts/Outrun\ future\ Bold.otf');
+    font-weight: bold;
+}
+
+@font-face {
+    font-family: "Outrun future";
+    src: url('/static/fonts/Outrun\ future\ Bold\ Italic.otf');
+    font-weight: bold;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: "VCR OSD Mono";
+    src: url('/static/fonts/VCR_OSD_MONO_1.001.ttf');
+}
+
+body {
+    margin-top: 28.5vh;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+
+    font-family: "VCR OSD Mono", monospace;
+    
+    background: url("/static/images/outrun-background.png") no-repeat center center fixed;
+}
+
+@media only screen and (max-width: 600px) {
+    body {
+        margin-top: 10vh;
+    }
+}
+
+#dirty-flag-data {
+    border-radius: 1rem;
+    background: rgba(256, 256, 128, 0.3);
+}
+
+h1, p {
+    text-align: center;
+}
+
+.outrun {
+    font-family: "Outrun future", sans-serif;
+    text-shadow: 0 0 10px #ff00ff;
+}
+
+h1 > .outrun {
+    font-size: 2em;
+    line-height: 1.5em;
+}
+
+p {
+    font-size: 1.25em;
+    line-height: 0.75em;
+}
