@@ -10,8 +10,6 @@ load_dotenv()
 
 from authlib.integrations.flask_client import OAuth
 
-from stockfish import Stockfish
-
 from games import get_berserk_client, get_username, get_dirty_flag_data
 
 LICHESS_HOST = os.getenv("LICHESS_HOST", "https://lichess.org")
