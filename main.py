@@ -104,12 +104,10 @@ def get_dirty_flag_games(games: list[dict], username: str):
 
 
 games = get_games(USERNAME)
-dirty_flag_games = get_dirty_flag_games(USERNAME)
+dirty_flag_games = get_dirty_flag_games(games, USERNAME)
 for game in dirty_flag_games:
     game_id = game["id"]
-    game_ply_count = (
-        len(game["analysis"]) if "analysis" in game else (game["moves"] * 2 - 1)
-    )
+    game_ply_count = len(game["moves"].split(" "))
     print(f"https://lichess.org/{game_id}#{game_ply_count}")
 
 stockfish.send_quit_command()
