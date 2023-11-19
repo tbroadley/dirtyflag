@@ -25,6 +25,9 @@ def user_won_game(game: dict, username: str) -> bool:
 
 
 def analysis_showed_user_was_winning(game: dict, username: str) -> bool:
+    if "analysis" not in game:
+        return False
+
     last_move_analysis = game["analysis"][-1]
     if last_move_analysis is None:
         return False
@@ -48,12 +51,16 @@ def analysis_showed_user_was_winning(game: dict, username: str) -> bool:
     return False
 
 
+def evaluation_shows_user_was_winning(game: dict) -> bool:
+    # TODO
+    return False
+
+
 def get_dirty_flag_games(username: str):
     games = client.games.export_by_player(
         username,
         as_pgn=False,
         perf_type="rapid,blitz,bullet,ultraBullet",
-        analysed=True,
         evals=True,
     )
     dirty_flags = []
@@ -63,7 +70,9 @@ def get_dirty_flag_games(username: str):
             continue
         if not user_won_game(game, username):
             continue
-        if analysis_showed_user_was_winning(game, username):
+        if analysis_showed_user_was_winning(
+            game, username
+        ) or evaluation_shows_user_was_winning(game):
             continue
         dirty_flags.append(game)
 
