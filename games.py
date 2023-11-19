@@ -3,15 +3,6 @@ from berserk.models import Game
 from stockfish import Stockfish
 import os
 
-TOKEN = os.environ["LICHESS_API_TOKEN"]
-USERNAME = "newwwworld"  # replace with the username you're interested in
-
-session = berserk.TokenSession(TOKEN)
-client = berserk.Client(session=session)
-
-
-stockfish = Stockfish("./stockfish/src/stockfish")
-
 
 def user_won_game(game: dict, username: str) -> bool:
     if not "winner" in game:
@@ -46,7 +37,7 @@ def get_rough_evaluation_from_analysis(game: dict) -> int | None:
     )
 
 
-def get_rough_evaluation_from_stockfish(game: dict) -> int:
+def get_rough_evaluation_from_stockfish(game: dict, stockfish: Stockfish) -> int:
     print(f"Using Stockfish to evaluate game {game['id']}")
 
     stockfish.set_fen_position(game["lastFen"])
@@ -59,7 +50,7 @@ def get_rough_evaluation_from_stockfish(game: dict) -> int:
     )
 
 
-def get_games(username: str) -> list[dict]:
+def get_games(client: berserk.Client, username: str) -> list[dict]:
     # Not using client.games.export_by_player because it doesn't support lastFen
     return client.games._r.get(
         path=f"https://lichess.org/api/games/user/{username}",
@@ -74,7 +65,7 @@ def get_games(username: str) -> list[dict]:
     )
 
 
-def get_dirty_flag_games(games: list[dict], username: str):
+def get_dirty_flag_games(games: list[dict], username: str, stockfish: Stockfish):
     dirty_flag_games = []
 
     for game in games:
@@ -85,7 +76,9 @@ def get_dirty_flag_games(games: list[dict], username: str):
 
         rough_evaluation_centipawns = get_rough_evaluation_from_analysis(game)
         if rough_evaluation_centipawns is None:
-            rough_evaluation_centipawns = get_rough_evaluation_from_stockfish(game)
+            rough_evaluation_centipawns = get_rough_evaluation_from_stockfish(
+                game, stockfish
+            )
 
         if (
             game["players"]["white"]["user"]["name"] == username
@@ -103,11 +96,22 @@ def get_dirty_flag_games(games: list[dict], username: str):
     return dirty_flag_games
 
 
-games = get_games(USERNAME)
-dirty_flag_games = get_dirty_flag_games(games, USERNAME)
-for game in dirty_flag_games:
+def get_end_of_game_link(game: dict) -> str:
     game_id = game["id"]
     game_ply_count = len(game["moves"].split(" "))
-    print(f"https://lichess.org/{game_id}#{game_ply_count}")
+    return f"https://lichess.org/{game_id}#{game_ply_count}"
 
-stockfish.send_quit_command()
+
+if __name__ == "__main__":
+    lichess_username = "newwwworld"
+    lichess_api_token = os.environ["LICHESS_API_TOKEN"]
+
+    berserk_session = berserk.TokenSession(lichess_api_token)
+    berserk_client = berserk.Client(session=berserk_session)
+
+    stockfish = Stockfish("./stockfish/src/stockfish")
+
+    games = get_games(berserk_client, lichess_username)
+    dirty_flag_games = get_dirty_flag_games(games, lichess_username, stockfish)
+    for game in dirty_flag_games:
+        print(get_end_of_game_link(game))
