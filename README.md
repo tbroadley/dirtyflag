@@ -10,3 +10,4 @@ Things to improve:
 - Detecting if a win came because your opponent DC'd or left the game instead of timing out?
 - Stand it up as a web app so that people can use it more easily?
   - Sign in with Lichess?
+- Chess.com support
