@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, jsonify, redirect, render_template
+from flask import Flask, jsonify, make_response, redirect, render_template
 from flask import session
 from flask import url_for
 
@@ -68,7 +68,9 @@ def get_dirty_flag_summary():
         return jsonify({}), 401
 
     data = get_dirty_flag_data(session["token"]["access_token"])
-    return render_template("dirty_flag_summary.html", **data)
+    response = make_response(render_template("dirty_flag_summary.html", **data))
+    response.cache_control.max_age = 60 * 60  # One hour
+    return response
 
 
 if __name__ == "__main__":

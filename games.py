@@ -113,7 +113,6 @@ def get_username(berserk_client: berserk.Client) -> str:
     return berserk_client.account.get()["username"]
 
 
-@lru_cache()
 def get_dirty_flag_data(access_token: str) -> dict:
     berserk_client = get_berserk_client(access_token)
     username = get_username(berserk_client)
